@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吴中四才子 · 科举功名考</title>
+<style>
+  :root {
+    --ink: #2b2b2b;
+    --ink-light: #6b6459;
+    --paper: #f7f4ee;
+    --card: #fffdf8;
+    --red: #a63c2e;
+    --gold: #b08a3e;
+    --green: #5a7247;
+    --blue: #4a6b8a;
+    --line: #e3dccd;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.8;
+    padding-bottom: 60px;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+  .anchor { scroll-margin-top: 96px; }
+
+  /* —— 顶部索引栏 —— */
+  .topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,244,238,0.96);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 2px 10px rgba(60,50,30,0.06);
+    padding: 10px 20px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    max-width: 1040px; margin: 0 auto;
+  }
+  .topnav .nav-label { font-size: 12.5px; color: var(--ink-light); letter-spacing: 2px; margin-right: 2px; }
+  .chip {
+    display: inline-block; padding: 4px 14px; border-radius: 20px;
+    border: 1px solid #c9bfa8; background: #fffdf8;
+    font-size: 13.5px; color: var(--ink); text-decoration: none;
+    letter-spacing: 1px; transition: all .18s ease; cursor: pointer;
+  }
+  .chip:hover { background: #3a3a38; color: #f5efe2; border-color: #3a3a38; transform: translateY(-1px); }
+  .chip.p-zhu  { border-color: var(--blue);  color: var(--blue); }
+  .chip.p-tang { border-color: var(--red);   color: var(--red); }
+  .chip.p-wen  { border-color: var(--green); color: var(--green); }
+  .chip.p-xu   { border-color: var(--gold);  color: var(--gold); }
+  .chip.p-zhu:hover  { background: var(--blue);  color:#fff; }
+  .chip.p-tang:hover { background: var(--red);   color:#fff; }
+  .chip.p-wen:hover  { background: var(--green); color:#fff; }
+  .chip.p-xu:hover   { background: var(--gold);  color:#fff; }
+
+  header {
+    background: linear-gradient(180deg, #3a3a38 0%, #54524d 100%);
+    color: #f5efe2;
+    text-align: center;
+    padding: 56px 20px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: "吳";
+    position: absolute; right: -20px; top: -40px;
+    font-size: 260px; opacity: 0.06; font-family: "KaiTi","STKaiti",serif;
+  }
+  header h1 { font-size: 42px; letter-spacing: 12px; font-weight: 700; }
+  header .sub { margin-top: 14px; font-size: 16px; letter-spacing: 4px; color: #d8cfba; }
+  header .names { margin-top: 24px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  header .names a {
+    color: #f0e6cf; text-decoration: none; font-size: 16px; letter-spacing: 3px;
+    border: 1px solid rgba(224,198,138,0.55); padding: 8px 22px; border-radius: 6px;
+    transition: all .2s ease;
+  }
+  header .names a:hover { background: #b08a3e; border-color: #b08a3e; color: #fff; transform: translateY(-2px); }
+  header .hint { margin-top: 14px; font-size: 12.5px; color: #b7ad97; letter-spacing: 2px; }
+
+  h2 {
+    font-size: 26px; letter-spacing: 6px; margin: 56px 0 8px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  h2::before { content: ""; width: 8px; height: 26px; background: var(--red); border-radius: 2px; }
+  .h2note { color: var(--ink-light); font-size: 14px; margin-bottom: 24px; padding-left: 22px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 26px 30px; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(60,50,30,0.05);
+  }
+
+  /* —— 排辈 —— */
+  .elder-row { display: flex; align-items: stretch; gap: 0; margin-top: 10px; }
+  .elder {
+    flex: 1; text-align: center; padding: 22px 8px 18px;
+    border-left: 1px dashed var(--line);
+  }
+  .elder:first-child { border-left: none; }
+  .elder .rank {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--red); color: #fff; font-size: 17px; margin-bottom: 10px;
+    font-family: "KaiTi", serif;
+  }
+  .elder:nth-child(2) .rank { background: var(--gold); }
+  .elder:nth-child(3) .rank { background: var(--blue); }
+  .elder:nth-child(4) .rank { background: var(--green); }
+  .elder .name { font-size: 21px; font-weight: 700; letter-spacing: 3px; }
+  .elder .years { color: var(--red); font-size: 15px; margin-top: 4px; }
+  .elder .birth { color: var(--ink-light); font-size: 13px; margin-top: 2px; }
+
+  /* —— 科举对比 —— */
+  table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; text-align: left; }
+  th { background: #efe9db; letter-spacing: 2px; font-weight: 700; white-space: nowrap; }
+  td.center, th.center { text-align: center; }
+  /* 姓名列：不换行、稍宽 */
+  .card table td:nth-child(2) { white-space: nowrap; font-size: 15.5px; letter-spacing: 1px; }
+  /* 小传画像 */
+  .portrait { float: right; clear: right; width: 128px; margin: 2px 0 12px 20px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 5px; box-shadow: 0 2px 6px rgba(90,70,40,.12); text-align: center; }
+  .portrait img { width: 100%; display: block; border-radius: 5px; }
+  .portrait .cap { font-size: 11px; color: var(--ink-light); margin-top: 5px; line-height: 1.5; }
+  .badge {
+    display: inline-block; padding: 3px 12px; border-radius: 20px;
+    font-size: 13px; color: #fff; white-space: nowrap;
+  }
+  .b1 { background: var(--red); }
+  .b2 { background: var(--gold); }
+  .b3 { background: var(--blue); }
+  .b4 { background: var(--green); }
+
+  .verdict {
+    background: #f4ede0; border-left: 4px solid var(--gold);
+    padding: 18px 24px; border-radius: 0 8px 8px 0; margin-top: 22px;
+    font-size: 15px;
+  }
+  .verdict strong { color: var(--red); }
+
+  /* —— 关系图谱 —— */
+  .map-svg { width: 100%; height: auto; display: block; margin-top: 8px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 22px; font-size: 13px; color: var(--ink-light); margin-bottom: 12px; align-items: center; }
+  .legend .li { display: flex; align-items: center; gap: 7px; }
+  .legend svg { display: block; }
+
+  /* —— 人物卡 —— */
+  .profile { border-top: 4px solid var(--red); scroll-margin-top: 96px; }
+  .profile::after { content: ""; display: block; clear: both; }
+  .profile.gold { border-top-color: var(--gold); }
+  .profile.blue { border-top-color: var(--blue); }
+  .profile.green { border-top-color: var(--green); }
+  .profile-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .profile-head .pname { font-size: 25px; font-weight: 700; letter-spacing: 4px; }
+  .profile-head .ptime { color: var(--red); font-size: 15px; }
+  .tagline { color: var(--ink-light); font-size: 14px; width: 100%; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 16px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+  .block h4 {
+    font-size: 15px; letter-spacing: 3px; color: var(--red);
+    border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 10px;
+  }
+  .profile.gold .block h4 { color: var(--gold); }
+  .profile.blue .block h4 { color: var(--blue); }
+  .profile.green .block h4 { color: var(--green); }
+  .block ul { padding-left: 18px; font-size: 14.5px; }
+  .block li { margin-bottom: 6px; }
+  .block li b { font-weight: 700; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 860px) { .grid3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .grid3 { grid-template-columns: 1fr; } }
+  .tcard { background: #fbf8f1; border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; scroll-margin-top: 96px; }
+  .tcard:hover { border-color: var(--gold); }
+  .tcard .tname { font-weight: 700; font-size: 17px; letter-spacing: 2px; }
+  .tcard .tyears { font-size: 12px; font-weight: 400; color: var(--ink-light); margin-left: 6px; }
+  .tcard .trole { font-size: 12.5px; color: var(--gold); margin-top: 2px; letter-spacing: 1px; }
+  .tcard p { font-size: 13.5px; margin-top: 8px; color: #4a453c; line-height: 1.75; }
+  .backtop { float: right; font-size: 12.5px; color: var(--ink-light); text-decoration: none; }
+  .backtop:hover { color: var(--red); }
+
+  /* —— 结语（深色调，与人物卡区分） —— */
+  .conclusion {
+    background: linear-gradient(180deg, #3a3a38 0%, #4c4a45 100%);
+    border: 1px solid #2e2e2c;
+    box-shadow: 0 4px 14px rgba(40,35,25,0.25);
+  }
+  .conclusion { font-size: 15.5px; }
+  .conclusion p { margin-bottom: 12px; text-indent: 2em; color: #f0e9d8; }
+  .conclusion strong { color: #e6c789; letter-spacing: 1px; }
+  .conclusion b { color: #e6c789; }
+  footer { text-align: center; color: var(--ink-light); font-size: 12.5px; margin-top: 60px; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+<!-- 顶部索引栏 -->
+<nav class="topnav">
+  <span class="nav-label">索引</span>
+  <a class="chip" href="#sec-order">论资排辈</a>
+  <a class="chip" href="#sec-keju">科举功名</a>
+  <a class="chip" href="#sec-map">关系图谱</a>
+  <a class="chip" href="#sec-teachers">师长群像</a>
+  <a class="chip" href="#sec-zhuan">人物小传</a>
+  <a class="chip" href="#sec-ping">总评</a>
+  <span class="nav-label" style="margin-left:14px;">直达小传</span>
+  <a class="chip p-zhu"  href="#p-zhu">祝允明</a>
+  <a class="chip p-tang" href="#p-tang">唐 寅</a>
+  <a class="chip p-wen"  href="#p-wen">文徵明</a>
+  <a class="chip p-xu"   href="#p-xu">徐祯卿</a>
+</nav>
+
+<header>
+  <h1>吴中四才子</h1>
+  <div class="sub">以科举功名论才学 · 明中期苏州文化群像</div>
+  <div class="names">
+    <a href="#p-zhu">祝允明</a>
+    <a href="#p-tang">唐 寅</a>
+    <a href="#p-wen">文徵明</a>
+    <a href="#p-xu">徐祯卿</a>
+  </div>
+  <div class="hint">点击名字可直接跳转至详细资料 ↓</div>
+</header>
+
+<div class="wrap">
+
+  <h2 id="sec-order" class="anchor">壹 · 论资排辈</h2>
+  <p class="h2note">按生年先后排序（古人尚齿，长者为尊）。祝允明生于天顺四年十二月（公历已入1461年初），长唐、文二人约十岁，长徐祯卿十九岁。</p>
+  <div class="card">
+    <div class="elder-row">
+      <div class="elder">
+        <div class="rank">大</div>
+        <div class="name">祝允明</div>
+        <div class="years">1461 — 1527</div>
+        <div class="birth">生于天顺四年腊月 · 享年67</div>
+      </div>
+      <div class="elder">
+        <div class="rank">二</div>
+        <div class="name">唐 寅</div>
+        <div class="years">1470 — 1524</div>
+        <div class="birth">成化六年二月初四 · 享年54</div>
+      </div>
+      <div class="elder">
+        <div class="rank">三</div>
+        <div class="name">文徵明</div>
+        <div class="years">1470 — 1559</div>
+        <div class="birth">成化六年十一月 · 享年90</div>
+      </div>
+      <div class="elder">
+        <div class="rank">四</div>
+        <div class="name">徐祯卿</div>
+        <div class="years">1479 — 1511</div>
+        <div class="birth">成化十五年 · 享年33</div>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-light);margin-top:16px;">
+      ※ 唐寅与文徵明同生于成化六年（1470），唐寅生于二月、文徵明生于十一月，唐寅略长八月余。唐寅卒年一作嘉靖二年（1523），是农历纪年；其卒于嘉靖二年腊月，公历已入1524年初。祝允明生年亦有作1460年者（天顺四年），依公历换算为1461年1月。
+    </p>
+  </div>
+
+  <h2 id="sec-keju" class="anchor">贰 · 科举功名考</h2>
+  <p class="h2note">四人功名由高到低：进士 &gt; 解元（举人）&gt; 举人 &gt; 秀才（岁贡）。有意思的是——功名高低与后世声望几乎完全倒挂。</p>
+  <div class="card">
+    <table>
+      <tr>
+        <th class="center">位次</th><th>姓名</th><th>科举功名</th><th class="center">中第年龄<br>（虚岁）</th><th>关键事实</th><th>仕宦经历</th>
+      </tr>
+      <tr>
+        <td class="center"><span class="badge b1">进士</span></td>
+        <td><b>徐祯卿</b></td>
+        <td>弘治十八年（1505）<b>进士</b></td>
+        <td class="center"><b>27岁</b></td>
+        <td>四人中唯一正途进士。传说因貌寝（相貌不佳）不得入翰林，故仅授大理寺左寺副；正德五年（1510）坐事贬国子监博士。</td>
+        <td>大理寺左寺副 → 国子监博士</td>
+      </tr>
+      <tr>
+        <td class="center"><span class="badge b2">举人 · 解元</span></td>
+        <td><b>唐 寅</b></td>
+        <td>弘治十一年（1498）应天府乡试<b>第一（解元）</b></td>
+        <td class="center"><b>29岁</b></td>
+        <td>16岁中童试案首，29岁中解元，主考梁储奇其文。次年进京会试，卷入徐经科场案（牵连主考程敏政，同乡都穆构其事），下诏狱、黜充吏役，耻不就——功名之路就此断绝。</td>
+        <td>无（终身布衣，以卖画为生）</td>
+      </tr>
+      <tr>
+        <td class="center"><span class="badge b3">举人</span></td>
+        <td><b>祝允明</b></td>
+        <td>弘治五年（1492）<b>举人</b>（第五次乡试中式）</td>
+        <td class="center"><b>32岁</b></td>
+        <td>19岁中秀才，此后<b>七次会试不第</b>，连其子祝续都先他一科中了进士，遂绝念科举，以举人谒选为官。</td>
+        <td>广东兴宁知县 → 南京应天府通判，不久称病辞归</td>
+      </tr>
+      <tr>
+        <td class="center"><span class="badge b4">秀才 · 岁贡</span></td>
+        <td><b>文徵明</b></td>
+        <td>弘治元年（1488）中<b>生员（秀才）</b>，十应乡试皆落第</td>
+        <td class="center"><b>19岁</b></td>
+        <td>幼时不慧，19岁（虚岁）考中长洲县生员（据载岁试还因字丑被置三等），此后自26岁至53岁<b>十应乡试不中</b>。嘉靖二年（1523）经李充嗣推荐，以岁贡生诣吏部试，得授翰林院待诏——是"荐"出来的功名，非考出来的。</td>
+        <td>翰林院待诏（三年即辞官归里）</td>
+      </tr>
+    </table>
+
+    <div class="verdict">
+      <strong>科举维度的结论：</strong>若以功名论，徐祯卿最高（唯一进士）、唐寅次之（举人·解元）、祝允明第三（举人）、文徵明垫底（秀才出身，以岁贡荐授）。但这恰恰是"江南四大才子"最大的反讽——<b>四人之"才"，几乎无一通过科举得到兑现</b>：唯一的进士33岁早逝；解元被科场案终身放逐；举人考到儿子都中进士才认输；功名最低的文徵明反而以90岁高龄主盟吴门艺坛三十余年，成为四人中影响最大者。吴中文风之盛，盛在才情，不在考场。
+    </div>
+  </div>
+
+  <h2 id="sec-map" class="anchor">叁 · 江南文化圈关系图谱</h2>
+  <p class="h2note">从"师承"扩展为整个江南文化圈：师长、同辈交游、艺术流派与恩怨事件一并纳入。特别注意——<b>唐寅与文徵明既是"吴中四才子"，又同列"明四家"（与沈周、仇英并列）</b>，故图中四人皆有"明四家"标记。<b>图谱顶部的师长姓名已加下划线，点击可直接跳转至"师长群像"详介。</b></p>
+  <div class="card">
+    <div class="legend">
+      <span class="li"><svg width="34" height="10"><line x1="0" y1="5" x2="34" y2="5" stroke="#8a7a5a" stroke-width="2"/></svg>师承 / 科举关系</span>
+      <span class="li"><svg width="34" height="10"><line x1="0" y1="5" x2="34" y2="5" stroke="#a63c2e" stroke-width="2" stroke-dasharray="6,4"/></svg>重要事件 / 恩怨</span>
+      <span class="li"><svg width="34" height="10"><line x1="0" y1="5" x2="34" y2="5" stroke="#4a6b8a" stroke-width="2" stroke-dasharray="2,4"/></svg>同辈交游</span>
+      <span class="li"><svg width="34" height="10"><line x1="0" y1="5" x2="34" y2="5" stroke="#8a7a5a" stroke-width="2" stroke-dasharray="8,4"/></svg>同门师兄弟</span>
+      <span class="li" style="color:#b08a3e;">◆ 金标 = 明四家成员</span>
+    </div>
+
+    <svg class="map-svg" viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" font-family="'KaiTi','STKaiti','Noto Serif SC',serif">
+      <!-- ===== 连线（先画线，再画节点覆盖端点） ===== -->
+      <!-- 师承：实线 -->
+      <g stroke="#8a7a5a" stroke-width="1.6" fill="none">
+        <path d="M110,72 Q90,160 130,245"/>
+        <path d="M275,72 Q200,150 175,245"/>
+        <path d="M545,72 Q300,130 215,245"/>
+        <path d="M440,72 Q460,155 505,245"/>
+        <path d="M470,72 Q600,120 675,245"/>
+        <path d="M590,72 Q540,155 545,245"/>
+        <path d="M635,72 Q690,150 715,245"/>
+        <path d="M740,72 Q640,150 580,245"/>
+        <path d="M720,72 Q520,110 400,245"/>
+        <path d="M865,72 Q600,190 420,245"/>
+        <path d="M900,72 Q958,300 575,445"/>
+      </g>
+      <!-- 恩怨事件：红虚线 -->
+      <g stroke="#a63c2e" stroke-width="1.6" fill="none" stroke-dasharray="6,4">
+        <path d="M150,445 Q205,385 290,303"/>
+      </g>
+      <!-- 同辈交游：蓝点线 -->
+      <g stroke="#4a6b8a" stroke-width="1.6" fill="none" stroke-dasharray="2,4">
+        <path d="M185,303 Q245,348 305,303"/>
+        <path d="M370,303 Q437,350 475,303"/>
+        <path d="M575,303 Q640,345 688,303"/>
+        <path d="M285,445 Q310,390 318,303"/>
+        <path d="M380,445 Q345,390 330,303"/>
+        <path d="M430,445 Q470,390 500,303"/>
+        <path d="M560,445 Q558,395 552,303"/>
+        <path d="M735,303 Q770,380 792,445"/>
+      </g>
+      <!-- 同门师兄弟：唐寅-仇英（同为周臣弟子） -->
+      <path d="M505,445 Q420,395 358,303" stroke="#8a7a5a" stroke-width="1.4" fill="none" stroke-dasharray="9,5"/>
+      <!-- 线上标注（白描边避让底色） -->
+      <g font-size="12.5" fill="#7a6c45" text-anchor="middle" paint-order="stroke" stroke="#f7f4ee" stroke-width="5" stroke-linejoin="round">
+        <text x="82" y="165">外公·书法</text>
+        <text x="196" y="148">乡试主考·赏识其文</text>
+        <text x="330" y="118">岳父·书法</text>
+        <text x="452" y="152">文</text>
+        <text x="600" y="148">文</text>
+        <text x="552" y="172">书法</text>
+        <text x="692" y="172">书法</text>
+        <text x="660" y="142">画</text>
+        <text x="505" y="168">画</text>
+        <text x="818" y="118">院体画法</text>
+        <text x="888" y="272" fill="#6b5a2a">师承</text>
+      </g>
+      <g font-size="12.5" fill="#a63c2e" text-anchor="middle" paint-order="stroke" stroke="#f7f4ee" stroke-width="5" stroke-linejoin="round" font-weight="bold">
+        <text x="185" y="392">构陷科场案</text>
+      </g>
+      <g font-size="12.5" fill="#41597a" text-anchor="middle" paint-order="stroke" stroke="#f7f4ee" stroke-width="5" stroke-linejoin="round">
+        <text x="243" y="342">挚友·劝学</text>
+        <text x="424" y="344">同门至交</text>
+        <text x="632" y="342">合纂《太湖新录》</text>
+        <text x="283" y="381">狂友</text>
+        <text x="382" y="400">亲家·营葬</text>
+        <text x="515" y="368">忘年至交</text>
+        <text x="590" y="398">艺事相磋</text>
+        <text x="394" y="377">师兄弟</text>
+        <text x="806" y="388">诗学复古·前七子</text>
+      </g>
+
+      <!-- ===== 顶层：师长（点击姓名跳转至"师长群像"） ===== -->
+      <g text-anchor="middle">
+        <rect x="55"  y="28" width="150" height="44" rx="9" fill="#efe9db" stroke="#b08a3e" stroke-width="1.4"/>
+        <a href="#t-xuyouzhen"><text x="130" y="47" font-size="15.5" fill="#6b5a2a" style="cursor:pointer" text-decoration="underline">徐有贞（外公）</text></a>
+        <text x="130" y="64" font-size="11" fill="#a3936a">原名徐珵</text>
+        <rect x="235" y="28" width="110" height="44" rx="9" fill="#efe9db" stroke="#b08a3e" stroke-width="1.4"/>
+        <a href="#t-wangao"><text x="290" y="56" font-size="16" fill="#6b5a2a" style="cursor:pointer" text-decoration="underline">王　鏊</text></a>
+        <rect x="385" y="28" width="110" height="44" rx="9" fill="#efe9db" stroke="#b08a3e" stroke-width="1.4"/>
+        <a href="#t-wukuan"><text x="440" y="56" font-size="16" fill="#6b5a2a" style="cursor:pointer" text-decoration="underline">吴　宽</text></a>
+        <rect x="530" y="28" width="150" height="44" rx="9" fill="#efe9db" stroke="#b08a3e" stroke-width="1.4"/>
+        <a href="#t-liyingzhen"><text x="605" y="56" font-size="16" fill="#6b5a2a" style="cursor:pointer" text-decoration="underline">李应祯</text></a>
+        <rect x="715" y="28" width="110" height="44" rx="9" fill="#efe9db" stroke="#b08a3e" stroke-width="1.4"/>
+        <a href="#t-shenzhou"><text x="770" y="50" font-size="16" fill="#6b5a2a" style="cursor:pointer" text-decoration="underline">沈　周</text></a>
+        <text x="770" y="66" font-size="11" fill="#b08a3e">◆明四家</text>
+        <rect x="850" y="28" width="105" height="44" rx="9" fill="#efe9db" stroke="#b08a3e" stroke-width="1.4"/>
+        <a href="#t-zhouchen"><text x="902" y="56" font-size="16" fill="#6b5a2a" style="cursor:pointer" text-decoration="underline">周　臣</text></a>
+      </g>
+      <rect x="375" y="4" width="210" height="21" rx="10" fill="#f4efe3" stroke="#d8cfba" stroke-width="1"/>
+      <text x="480" y="19" font-size="12" fill="#a09478" text-anchor="middle" letter-spacing="4">—— 长 辈 · 师 长 层 ——</text>
+
+      <!-- ===== 中层：吴中四才子 ===== -->
+      <rect x="380" y="214" width="200" height="21" rx="10" fill="#f4efe3" stroke="#d8cfba" stroke-width="1"/>
+      <text x="480" y="229" font-size="12" fill="#a09478" text-anchor="middle" letter-spacing="4">—— 吴 中 四 才 子 ——</text>
+      <g text-anchor="middle">
+        <rect x="65"  y="245" width="165" height="58" rx="11" fill="#4a6b8a"/>
+        <text x="147" y="272" font-size="17" font-weight="bold" fill="#fff">祝允明</text>
+        <text x="147" y="291" font-size="11" fill="#dce6ef">1461-1527 · 草书明朝第一</text>
+        <rect x="255" y="245" width="155" height="58" rx="11" fill="#a63c2e"/>
+        <text x="332" y="272" font-size="17" font-weight="bold" fill="#fff">唐　寅</text>
+        <text x="332" y="291" font-size="11" fill="#f3d9d2">1470-1524 · ◆明四家</text>
+        <rect x="450" y="245" width="165" height="58" rx="11" fill="#5a7247"/>
+        <text x="532" y="272" font-size="17" font-weight="bold" fill="#fff">文徵明</text>
+        <text x="532" y="291" font-size="11" fill="#dfe8d8">1470-1559 · ◆明四家</text>
+        <rect x="645" y="245" width="155" height="58" rx="11" fill="#b08a3e"/>
+        <text x="722" y="272" font-size="17" font-weight="bold" fill="#fff">徐祯卿</text>
+        <text x="722" y="291" font-size="11" fill="#f4ead2">1479-1511 · 吴中诗冠</text>
+      </g>
+
+      <!-- ===== 底层：同辈交游 ===== -->
+      <rect x="360" y="414" width="240" height="21" rx="10" fill="#f4efe3" stroke="#d8cfba" stroke-width="1"/>
+      <text x="480" y="429" font-size="12" fill="#a09478" text-anchor="middle" letter-spacing="4">—— 同 辈 交 游 · 流 派 ——</text>
+      <g text-anchor="middle">
+        <rect x="75"  y="445" width="105" height="48" rx="10" fill="#e8eef4" stroke="#4a6b8a" stroke-width="1.2"/>
+        <text x="127" y="474" font-size="15" fill="#2f4a63">都　穆</text>
+        <rect x="215" y="445" width="105" height="48" rx="10" fill="#e8eef4" stroke="#4a6b8a" stroke-width="1.2"/>
+        <text x="267" y="474" font-size="15" fill="#2f4a63">张　灵</text>
+        <rect x="355" y="445" width="105" height="48" rx="10" fill="#e8eef4" stroke="#4a6b8a" stroke-width="1.2"/>
+        <text x="407" y="474" font-size="15" fill="#2f4a63">王　宠</text>
+        <rect x="495" y="445" width="105" height="48" rx="10" fill="#e8eef4" stroke="#4a6b8a" stroke-width="1.2"/>
+        <text x="547" y="466" font-size="15" fill="#2f4a63">仇　英</text>
+        <text x="547" y="484" font-size="11" fill="#b08a3e">◆明四家</text>
+        <rect x="680" y="445" width="250" height="48" rx="10" fill="#e8eef4" stroke="#4a6b8a" stroke-width="1.2"/>
+        <text x="805" y="474" font-size="15" fill="#2f4a63">李梦阳 · 何景明（前七子）</text>
+      </g>
+    </svg>
+
+    <div class="verdict" style="margin-top:18px;">
+      <strong>图谱要点：</strong>
+      ① <b>李应祯</b>一身三任——既是祝允明的岳父，又是文徵明、徐祯卿的书法老师，是这张网的枢纽；
+      ② <b>唐寅、文徵明</b>双重身份：既是"吴中四才子"，又与沈周、仇英并称<b>"明四家"</b>（画坛最高组合）；
+      ③ 沈周、周臣于唐寅皆是<b>绘画</b>上的师承：周臣授以南宋<b>院体画法</b>（李唐一脉），沈周授以文人画意趣，唐寅熔两派于一炉；文学上则主要受吴中文人圈熏陶，并非正式拜师学文；
+      ④ 红色虚线记录了四才子圈最沉重的一笔：同乡<b>都穆</b>构陷唐寅科场案，致其终身不得仕；
+      ⑤ 棕色长虚线：唐寅与仇英<b>同出周臣门下</b>，是为师兄弟——一个承其法而化出文人风骨，一个谨守师法而成职业画圣手；
+      ⑥ 徐祯卿中进士入京后加入<b>前七子</b>，是四人中唯一"北上"融入全国性文学运动者。
+    </div>
+  </div>
+
+  <h2 id="sec-teachers" class="anchor">肆 · 师长群像</h2>
+  <p class="h2note">图谱中长辈、师长一层的六位，本身就是明代中期江南文化圈的顶梁柱——四大才子的"才"，一半是从他们身上传下来的。</p>
+  <div class="card">
+    <div class="grid3">
+      <div class="tcard" id="t-shenzhou">
+        <div class="tname">沈 周 <span class="tyears">1427—1509</span></div>
+        <div class="trole">文徵明、唐寅的绘画老师</div>
+        <p>字启南，号石田，苏州相城人。<b>吴门画派开创者、"明四家"之首</b>。山水、花鸟皆臻化境，书法学黄庭坚，诗文有《石田集》。郡守举荐贤良，他卜《易》得"嘉遯贞吉"，遂终身不仕，隐居艺事五十年。</p>
+      </div>
+      <div class="tcard" id="t-wukuan">
+        <div class="tname">吴 宽 <span class="tyears">1435—1504</span></div>
+        <div class="trole">文徵明、徐祯卿的文学老师</div>
+        <p>字原博，号匏庵。<b>成化八年状元——明代苏州第一位状元</b>，官至礼部尚书。诗文典雅蕴藉，主持文柄，为成化、弘治间文坛领袖；书法专学苏轼，形神兼得。</p>
+      </div>
+      <div class="tcard" id="t-liyingzhen">
+        <div class="tname">李应祯 <span class="tyears">1431—1493</span></div>
+        <div class="trole">祝允明岳父 · 文徵明、徐祯卿的书法老师</div>
+        <p>字贞伯，官至太仆寺卿。<b>篆、楷、行、草四体皆精</b>，笔法遒劲古雅，反对随人脚踵，主张自出门面。又精于书画鉴赏，所藏法书名画冠绝吴中——文徵明日后眼力独绝，根基正在于此。</p>
+      </div>
+      <div class="tcard" id="t-wangao">
+        <div class="tname">王 鏊 <span class="tyears">1450—1524</span></div>
+        <div class="trole">祝允明乡试主考 · 科举路上的伯乐</div>
+        <p>字济之，吴县人，<b>成化十一年探花</b>，官至户部尚书、武英殿大学士。文章弘博，为时文宗师；居官清正，人称"天下穷阁老"。弘治五年慧眼拔祝允明于乡试，唐寅赠联赞曰："海内文章第一，山中宰相无双。"</p>
+      </div>
+      <div class="tcard" id="t-xuyouzhen">
+        <div class="tname">徐有贞 <span class="tyears">1407—1472</span></div>
+        <div class="trole">祝允明外祖父 · 书法启蒙</div>
+        <p><b>初名徐珵</b>，字元玉，号天全，宣德八年进士。正统十四年土木堡之变后，朝议南迁，他力主迁都南京，为主战派的于谦等人所讥，声誉扫地、长期不受待见。到景泰年间，他<b>怕景泰帝朱祁钰记起旧名旧恶，遂改名"有贞"</b>——改名在前、夺门在后。景泰八年（1457）他策划"夺门之变"拥英宗朱祁镇复辟，因功官至兵部尚书、华盖殿大学士，封武功伯。书法长于行草，<b>深得怀素、米芾笔意</b>，兼通天文、地理、水利、方技之学，才华绝世。</p>
+      </div>
+      <div class="tcard" id="t-zhouchen">
+        <div class="tname">周 臣 <span class="tyears">约1460—1535</span></div>
+        <div class="trole">唐寅、仇英的绘画老师</div>
+        <p>字舜卿，号东村。职业画家，<b>南宋院体（李唐、马远一路）在明代的重要传人</b>，山水人物严整雄峻。一门两徒皆成大名：唐寅化院体为潇洒，青出于蓝；仇英谨守师法，终成职业画家第一人。</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 id="sec-zhuan" class="anchor">伍 · 四人小传：擅长 · 成就 · 大事记 · 后辈</h2>
+  <p class="h2note">依论资排辈顺序逐一展开（顶部索引栏可随时直达）。</p>
+
+  <div class="card profile" id="p-zhu">
+    <a class="backtop" href="#sec-zhuan">↑ 返回小传列表</a>
+    <div class="portrait"><img src="portraits/zhuyunming.jpg" alt="祝允明画像"><div class="cap">祝允明像（白描刻本）</div></div>
+    <div class="profile-head">
+      <span class="pname">祝允明</span>
+      <span class="ptime">1461 — 1527 ｜ 字希哲，号枝山、枝指生（右手六指）｜ 长洲人</span>
+      <span class="tagline">民间语云："唐伯虎的画，祝枝山的字。"——他以草书独步明代。</span>
+    </div>
+    <div class="grid2">
+      <div class="block">
+        <h4>擅长与成就</h4>
+        <ul>
+          <li><b>书法</b>（第一长技）：狂草被誉为"明朝第一"，与文徵明、王宠并称明中期书法三大家。代表作《草书杜甫诗卷》《赤壁赋》《六体书诗赋卷》。</li>
+          <li><b>诗文</b>：文章有奇气，当筵疾书，思若涌泉；著《怀星堂集》，另有《九朝野记》等杂著百余卷，并修《兴宁县志》。</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>大事记</h4>
+        <ul>
+          <li><b>1461</b>　生；5岁作径尺大字，9岁能诗，号称神童。</li>
+          <li><b>1492</b>　33岁，第五次乡试中举，主考王鏊激赏其文。</li>
+          <li><b>1499—1513</b>　七赴会试皆败北，心灰意冷。</li>
+          <li><b>1514</b>　55岁谒选，授广东兴宁知县，捕盗有政声。</li>
+          <li><b>1522</b>　转南京应天府通判（故后世称"祝京兆"），未几称病辞归。</li>
+          <li><b>1524</b>　为亡友唐寅撰写千余字墓志铭。</li>
+          <li><b>1527</b>　卒，享年67。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="block" style="margin-top:16px;">
+      <h4>后辈与身后</h4>
+      <ul>
+        <li><b>儿子祝续</b>：正德年间<b>考中进士</b>（祝允明自己七试会试不第，儿子却先他一科登第，此事直接促使他绝念科举），官至<b>广西左布政使</b>——祝家两代皆有功名在身。</li>
+        <li>其狂草书风经吴门后学传承发扬，"明中期书法三大家"（祝、文、王宠）中，另两家皆与其有师友渊源。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card profile gold" id="p-tang">
+    <a class="backtop" href="#sec-zhuan">↑ 返回小传列表</a>
+    <div class="portrait"><img src="portraits/tangyin.jpg" alt="唐寅画像"><div class="cap">唐寅像（设色立轴）</div></div>
+    <div class="profile-head">
+      <span class="pname">唐 寅</span>
+      <span class="ptime">1470 — 1524 ｜ 字伯虎，又字子畏，号六如居士、桃花庵主 ｜ 吴县人</span>
+      <span class="tagline">"江南第一风流才子"的印章是他自己刻的；而风流传说的背后，是一生坎坷、贫病而终的失意解元。</span>
+    </div>
+    <div class="grid2">
+      <div class="block">
+        <h4>擅长与成就</h4>
+        <ul>
+          <li><b>绘画</b>（明四家之一）：山水、人物、仕女、花鸟皆能，院体的谨严与文人的潇洒兼得。代表作《秋风纨扇图》《骑骡归思图》《山路松声图》《枯槎鸲鹆图》。</li>
+          <li><b>诗文</b>：早年奇丽，晚年颓然自放，戏语中寓忧思；有《六如居士全集》。名句如"别人笑我太疯癫，我笑他人看不穿"。</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>大事记</h4>
+        <ul>
+          <li><b>1470</b>　生于苏州阊门酒肆之家。</li>
+          <li><b>1485</b>　16岁中童子试第一（案首）。</li>
+          <li><b>1494</b>　父母、妻、妹相继离世，郁郁寡欢；经祝允明劝勉重新应考。</li>
+          <li><b>1498</b>　29岁中应天府解元，名震江南。</li>
+          <li><b>1499</b>　会试科场案下狱（同乡都穆构其事），黜为吏，耻不就；妻离、弟散，从此绝意仕途。</li>
+          <li><b>1509</b>　筑桃花庵于桃花坞，后半生主要创作期。</li>
+          <li><b>1514</b>　被宁王朱宸濠重金礼聘，察其有异志，<b>佯狂使酒</b>得脱——一生最险一劫。</li>
+          <li><b>1524</b>　贫病而卒，年54；祝允明撰墓志铭，王宠书碑，文徵明等集资营葬。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="block" style="margin-top:16px;">
+      <h4>后辈与身后</h4>
+      <ul>
+        <li>身后并无杰出的直系后人：膝下只有一女，嫁与挚友<b>王宠</b>之子王子阳，唐寅与王宠由忘年之交结为儿女亲家。</li>
+        <li>但"唐画"为后世所宗，其风流逸事更成为民间文艺的母题——"三笑姻缘""唐伯虎点秋香"皆属虚构，反倒让这位一生坎坷的失意解元，成了流传最广的"江南第一风流才子"。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card profile blue" id="p-wen">
+    <a class="backtop" href="#sec-zhuan">↑ 返回小传列表</a>
+    <div class="portrait"><img src="portraits/wenzhengming.jpg" alt="文徵明画像"><div class="cap">文徵明像（设色半身）</div></div>
+    <div class="profile-head">
+      <span class="pname">文徵明</span>
+      <span class="ptime">1470 — 1559 ｜ 初名壁，字徵明，更字徵仲，号衡山居士 ｜ 长洲人</span>
+      <span class="tagline">功名最低、天资最钝，却活得最久、成就最全——诗、文、书、画"四绝"，九十岁仍笔笔工整。</span>
+    </div>
+    <div class="grid2">
+      <div class="block">
+        <h4>擅长与成就</h4>
+        <ul>
+          <li><b>画</b>（明四家 / 吴门画派领袖）：细笔山水开一代面目，兼工花卉、人物；传世《湘君夫人图》《绿荫清话图》《拙政园图》等。</li>
+          <li><b>书</b>：小楷为明代之冠，篆隶正草无所不能；《四体千字文》为后世范本。</li>
+          <li><b>诗文</b>：诗宗白居易、苏轼，有《甫田集》；辞官后主盟吴中风雅三十余年，门生弟子数十人。</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>大事记</h4>
+        <ul>
+          <li><b>1470</b>　生；幼时不慧，据载十一岁方能言。</li>
+          <li><b>1496 起</b>　十应乡试，皆落第（考了整整近三十年）。</li>
+          <li><b>1523</b>　54岁，以岁贡生经荐授<b>翰林院待诏</b>，世称"文待诏"。</li>
+          <li><b>1524—1526</b>　卷入"大礼议"风波，郁郁不得志，遂辞官归里，从此不履公门。</li>
+          <li><b>1526—1559</b>　主持吴门艺坛三十余年，"直接追随者不下二三十人"，吴门画派臻于全盛。</li>
+          <li><b>1559</b>　卒，享年90，为四人中最长寿者。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="block" style="margin-top:16px;">
+      <h4>后辈与身后</h4>
+      <ul>
+        <li><b>曾孙文震孟</b>：<b>天启二年（1622）考中状元</b>，官至礼部左侍郎兼东阁大学士——文家功名之巅，恰由这位十试不第的先祖的后人补上。</li>
+        <li><b>儿子</b>：文彭，中国文人篆刻开山之祖（"文三桥"）；文嘉，书画鉴定名家。</li>
+        <li><b>弟子数十人</b>：陈淳（花鸟画大家）、陆师道、王穉登、周天球等皆出其门；文氏一门绵延数代，堪称<b>中国历史上最大的书画世家</b>。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card profile green" id="p-xu">
+    <a class="backtop" href="#sec-zhuan">↑ 返回小传列表</a>
+    <div class="portrait"><img src="portraits/xuzhenqing.png" alt="徐祯卿画像"><div class="cap">徐祯卿像（木刻本）</div></div>
+    <div class="profile-head">
+      <span class="pname">徐祯卿</span>
+      <span class="ptime">1479 — 1511 ｜ 字昌谷，一字昌国 ｜ 祖籍常熟，后迁吴县</span>
+      <span class="tagline">四人中唯一的进士、唯一的纯文学家，也是唯一被民间故事"除名"的一位——后世虚构周文宾顶替了他。名句："文章江左家家玉，烟月扬州树树花。"</span>
+    </div>
+    <div class="grid2">
+      <div class="block">
+        <h4>擅长与成就</h4>
+        <ul>
+          <li><b>诗歌</b>：号称"吴中诗冠""文雄"；格调高雅，驰骋汉唐之间。</li>
+          <li><b>诗论</b>：《谈艺录》为明代诗学名著，专论汉魏、不屑六朝，独到处连李梦阳、何景明亦不及——他是前七子中的理论担当。</li>
+          <li><b>书法</b>：亦为一绝，王世贞有专评；著《迪功集》《翦胜野闻》《异林》。</li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>大事记</h4>
+        <ul>
+          <li><b>1479</b>　生；人称"家不蓄一书，而无所不通"。</li>
+          <li><b>1494</b>　16岁著《新倩集》，知名吴中；此后屡试不第，读《离骚》有感作《叹叹集》。</li>
+          <li><b>1503</b>　与文徵明合纂《太湖新录》。</li>
+          <li><b>1505</b>　27岁中进士；因貌寝不得入翰林，授大理寺左寺副。</li>
+          <li><b>1505—1510</b>　入京后交李梦阳、何景明，加入<b>前七子</b>，倡导复古。</li>
+          <li><b>1510</b>　坐失囚贬国子监博士。</li>
+          <li><b>1511</b>　卒于京师，年仅33，归葬虎丘山麓。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="block" style="margin-top:16px;">
+      <h4>后辈与身后</h4>
+      <ul>
+        <li>33岁早逝，无子嗣传承——四人中唯一"绝后"的一位，这或许也是后世虚构"周文宾"来顶替他的原因之一。</li>
+        <li>但他的《谈艺录》与复古诗论，由后来的<b>"后七子"（李攀龙、王世贞）承其余绪</b>，主导晚明文坛走向近百年——论身后影响力，徐祯卿反而最"长寿"。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 id="sec-ping" class="anchor">陆 · 总评：科举照不亮的"才"</h2>
+  <div class="card conclusion">
+    <p>把四人的科举功名排成一列，会得到一个耐人寻味的序列：<b>徐祯卿（进士）→ 唐寅（解元）→ 祝允明（举人）→ 文徵明（岁贡）</b>。科举越得意者，人生越短促：唯一的进士徐祯卿33岁病殁于京师；解元唐寅被一场科场案毁掉终身，晚年贫病以卖画自给。</p>
+    <p>而科举最不得意的两位，反而活出了最长久的艺术生命：祝允明考到儿子都中了进士，索性弃考为官、为艺，终成"明朝草书第一"；十试不第的文徵明以一部荐授来的"翰林待诏"虚衔还乡，用三十六年主盟吴门，寿至九十，将诸位师长（沈周、吴宽、李应祯、周臣）的衣钵发扬成一代画派与书派。</p>
+    <p>从关系图谱还能看出，这四人从来不是孤立的"四大才子"，而是整个江南文化网络的枢纽节点：上承沈周、吴宽、李应祯一代宗师，下启王宠、仇英等后进，横向与张灵、都穆、前七子声气相通。所谓"江南四大才子"，其实是<b>一个文化圈的四个圆心</b>。所以，若以科举论，"四大才子"没有一个是成功者；但若以"才"论，恰恰是科场的失败者们，撑起了明代中期苏州的整片文化天空。苏州文风之盛，不在金榜题名，而在于——这里容得下考不中的人，也有本事把考不中的人，变成大师。</p>
+  </div>
+
+  <footer>资料来源：《明史·文苑传》本传、苏州地方志及通行史志记载整理 · 生卒年采用公历换算并注明农历纪年差异</footer>
+</div>
+</body>
+</html>
